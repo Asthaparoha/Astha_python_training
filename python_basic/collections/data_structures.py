@@ -2,11 +2,16 @@
 Data Structure Exercises.
 
 Contains solutions for:
-25. List operations
-26. Count even and odd numbers
-27. Reverse a list
-28. Tuple operations
-29. Convert tuple to list and modify
+25. Create a list of 10 numbers and find sum, max, sort it, and remove duplicates.
+26. Count even and odd numbers in a list.
+27. Reverse a list without using reverse().
+28. Create a tuple and access elements.
+29. Convert tuple into list and modify it.
+30. Perform union, intersection, and difference on two sets.
+31. Remove duplicates from list using set.
+32. Create a student dictionary and access values.
+33. Count frequency of characters in a string using dictionary.
+34. Merge two dictionaries.
 """
 
 
@@ -30,7 +35,6 @@ SAMPLE_TUPLE: tuple[str, ...] = (
 )
 
 
-# Question 25
 def perform_list_operations(
     numbers: list[int]
 ) -> dict[str, object]:
@@ -43,19 +47,14 @@ def perform_list_operations(
     Returns:
         dict[str, object]: Results.
     """
-    unique_numbers: list[int] = list(
-        set(numbers)
-    )
-
     return {
         "sum": sum(numbers),
         "maximum": max(numbers),
         "sorted": sorted(numbers),
-        "unique": unique_numbers
+        "unique": list(set(numbers))
     }
 
 
-# Question 26
 def count_even_and_odd_numbers(
     numbers: list[int]
 ) -> tuple[int, int]:
@@ -66,7 +65,7 @@ def count_even_and_odd_numbers(
         numbers: List of numbers.
 
     Returns:
-        tuple[int, int]: Even count, odd count.
+        tuple[int, int]: Even count and odd count.
     """
     even_count: int = 0
     odd_count: int = 0
@@ -80,15 +79,14 @@ def count_even_and_odd_numbers(
     return even_count, odd_count
 
 
-# Question 27
 def reverse_list(
     numbers: list[int]
 ) -> list[int]:
     """
-    Reverse a list without reverse().
+    Reverse a list.
 
     Args:
-        numbers: List of numbers.
+        numbers: Input list.
 
     Returns:
         list[int]: Reversed list.
@@ -96,7 +94,6 @@ def reverse_list(
     return numbers[::-1]
 
 
-# Question 28
 def display_tuple_elements(
     values: tuple[str, ...]
 ) -> None:
@@ -110,22 +107,19 @@ def display_tuple_elements(
         print(value)
 
 
-# Question 29
 def convert_tuple_to_list(
     values: tuple[str, ...]
 ) -> list[str]:
     """
-    Convert tuple to list.
+    Convert tuple to list and modify it.
 
     Args:
         values: Tuple values.
 
     Returns:
-        list[str]: Converted list.
+        list[str]: Modified list.
     """
-    converted_list: list[str] = list(
-        values
-    )
+    converted_list: list[str] = list(values)
 
     converted_list.append(
         "JavaScript"
@@ -134,14 +128,117 @@ def convert_tuple_to_list(
     return converted_list
 
 
+def perform_set_operations(
+    first_set: set[int],
+    second_set: set[int]
+) -> dict[str, set[int]]:
+    """
+    Perform set operations.
+
+    Args:
+        first_set: First set.
+        second_set: Second set.
+
+    Returns:
+        dict[str, set[int]]: Set operation results.
+    """
+    return {
+        "union": first_set.union(second_set),
+        "intersection": (
+            first_set.intersection(
+                second_set
+            )
+        ),
+        "difference": (
+            first_set.difference(
+                second_set
+            )
+        )
+    }
+
+
+def remove_duplicates(
+    numbers: list[int]
+) -> list[int]:
+    """
+    Remove duplicates from list.
+
+    Args:
+        numbers: Input list.
+
+    Returns:
+        list[int]: Unique values.
+    """
+    return list(set(numbers))
+
+
+def create_student_dictionary() -> dict[str, object]:
+    """
+    Create student dictionary.
+
+    Returns:
+        dict[str, object]: Student details.
+    """
+    return {
+        "student_id": 101,
+        "name": "Astha",
+        "course": "Engineering",
+        "semester": 7
+    }
+
+
+def count_character_frequency(
+    text: str
+) -> dict[str, int]:
+    """
+    Count character frequency.
+
+    Args:
+        text: Input string.
+
+    Returns:
+        dict[str, int]: Frequency dictionary.
+    """
+    frequency: dict[str, int] = {}
+
+    for character in text:
+        frequency[character] = (
+            frequency.get(
+                character,
+                0
+            ) + 1
+        )
+
+    return frequency
+
+
+def merge_dictionaries(
+    first_dictionary: dict,
+    second_dictionary: dict
+) -> dict:
+    """
+    Merge two dictionaries.
+
+    Args:
+        first_dictionary: First dictionary.
+        second_dictionary: Second dictionary.
+
+    Returns:
+        dict: Merged dictionary.
+    """
+    return (
+        first_dictionary
+        | second_dictionary
+    )
+
+
 def main() -> None:
     """
-    Execute data structure exercises.
+    Execute all data structure exercises.
     """
 
     print(
-        "\n--- Question 25: "
-        "List Operations ---"
+        "\n--- Question 25: List Operations ---"
     )
 
     results = perform_list_operations(
@@ -149,11 +246,12 @@ def main() -> None:
     )
 
     for key, value in results.items():
-        print(f"{key}: {value}")
+        print(
+            f"{key}: {value}"
+        )
 
     print(
-        "\n--- Question 26: "
-        "Even and Odd Count ---"
+        "\n--- Question 26: Count Even and Odd Numbers ---"
     )
 
     even_count, odd_count = (
@@ -163,18 +261,15 @@ def main() -> None:
     )
 
     print(
-        f"Even Numbers: "
-        f"{even_count}"
+        f"Even Numbers: {even_count}"
     )
 
     print(
-        f"Odd Numbers: "
-        f"{odd_count}"
+        f"Odd Numbers: {odd_count}"
     )
 
     print(
-        "\n--- Question 27: "
-        "Reverse List ---"
+        "\n--- Question 27: Reverse List ---"
     )
 
     print(
@@ -184,8 +279,7 @@ def main() -> None:
     )
 
     print(
-        "\n--- Question 28: "
-        "Tuple Elements ---"
+        "\n--- Question 28: Tuple Elements ---"
     )
 
     display_tuple_elements(
@@ -193,13 +287,112 @@ def main() -> None:
     )
 
     print(
-        "\n--- Question 29: "
-        "Tuple to List ---"
+        "\n--- Question 29: Convert Tuple to List ---"
     )
 
     print(
         convert_tuple_to_list(
             SAMPLE_TUPLE
+        )
+    )
+
+    print(
+        "\n--- Question 30: Set Operations ---"
+    )
+
+    first_set: set[int] = {
+        1,
+        2,
+        3,
+        4
+    }
+
+    second_set: set[int] = {
+        3,
+        4,
+        5,
+        6
+    }
+
+    set_results = (
+        perform_set_operations(
+            first_set,
+            second_set
+        )
+    )
+
+    for key, value in (
+        set_results.items()
+    ):
+        print(
+            f"{key}: {value}"
+        )
+
+    print(
+        "\n--- Question 31: Remove Duplicates Using Set ---"
+    )
+
+    duplicate_numbers: list[int] = [
+        1,
+        2,
+        2,
+        3,
+        4,
+        4,
+        5
+    ]
+
+    print(
+        remove_duplicates(
+            duplicate_numbers
+        )
+    )
+
+    print(
+        "\n--- Question 32: Student Dictionary ---"
+    )
+
+    student_data = (
+        create_student_dictionary()
+    )
+
+    for key, value in (
+        student_data.items()
+    ):
+        print(
+            f"{key}: {value}"
+        )
+
+    print(
+        "\n--- Question 33: Character Frequency ---"
+    )
+
+    text: str = input(
+        "Enter a string: "
+    )
+
+    print(
+        count_character_frequency(
+            text
+        )
+    )
+
+    print(
+        "\n--- Question 34: Merge Dictionaries ---"
+    )
+
+    first_dictionary: dict[str, str] = {
+        "name": "Astha"
+    }
+
+    second_dictionary: dict[str, str] = {
+        "course": "Engineering"
+    }
+
+    print(
+        merge_dictionaries(
+            first_dictionary,
+            second_dictionary
         )
     )
 
