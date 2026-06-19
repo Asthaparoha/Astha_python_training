@@ -1,21 +1,30 @@
 # Astha Python Training
 
-This repository contains solutions for Python Fundamentals training assignments.
+## Overview
+This repository contains solutions for Python Fundamentals and Advanced Python assignments.
 
 ## Topics Covered
 
-- Introduction to Python
+### Python Fundamentals
+- Introduction
 - Variables and Data Types
-- Operators and Conditionals
+- Conditionals
 - Loops
 - Functions
 - Modules
 - Collections
 - File Handling
+- OOP
+
+### Advanced Python
 - Exception Handling
-- Object-Oriented Programming
+- Iterators and Generators
+- Functional Programming
+- Regular Expressions
+- Testing and Debugging
+- Packaging
+- Threading
+- Multiprocessing
 
-## Project Structure
-
-The project follows modular design principles, PEP 8 standards, type hinting, and object-oriented programming concepts.
-
+## Author
+Astha Paroha
