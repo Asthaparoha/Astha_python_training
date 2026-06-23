@@ -21,6 +21,7 @@ opencv-contrib-python==4.12.0.88
 opencv-python==4.12.0.88
 opt_einsum==3.4.0
 packaging==25.0
+pandas==3.0.3
 pillow==11.3.0
 pluggy==1.6.0
 protobuf==4.25.8
@@ -42,6 +43,7 @@ pytweening==1.2.0
 regex==2024.11.6
 rubicon-objc==0.5.2
 scipy==1.16.1
+seaborn==0.13.2
 six==1.17.0
 sounddevice==0.5.2
 tqdm==4.67.1
