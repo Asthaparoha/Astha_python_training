@@ -3,6 +3,7 @@ from app.core.security import hash_password
 from app.config.settings import settings
 from app.database.connection import database
 from app.api.v1.auth import router as auth_router
+from app.api.v1.category import router as category_router
 from fastapi import Depends
 
 from app.dependencies.auth_dependency import get_current_user
@@ -22,3 +23,4 @@ async def home():
     }
 
 app.include_router(auth_router)
+app.include_router(category_router)

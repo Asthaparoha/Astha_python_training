@@ -1,6 +1,5 @@
 from datetime import datetime
 
-from app.config.settings import settings
 from app.core.security import (
     create_access_token,
     hash_password,
@@ -35,25 +34,6 @@ class AuthService:
     @staticmethod
     async def login(login_data):
 
-        # Hardcoded Admin Login
-        if (
-            login_data.email == settings.ADMIN_EMAIL
-            and login_data.password == settings.ADMIN_PASSWORD
-        ):
-            token = create_access_token(
-                {
-                    "email": settings.ADMIN_EMAIL,
-                    "role": "admin"
-                }
-            )
-
-            return {
-                "access_token": token,
-                "token_type": "bearer",
-                "role": "admin"
-            }
-
-        # Student Login
         user = await UserRepository.get_user_by_email(login_data.email)
 
         if user is None:
