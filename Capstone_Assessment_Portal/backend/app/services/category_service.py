@@ -8,11 +8,9 @@ class CategoryService:
     @staticmethod
     async def create_category(category):
 
-        existing_category = await CategoryRepository.get_category_by_name(
-            category.name
-        )
+        existing = await CategoryRepository.get_category_by_name(category.name)
 
-        if existing_category:
+        if existing:
             return None
 
         category_data = {
@@ -23,8 +21,44 @@ class CategoryService:
 
         category_id = await CategoryRepository.create_category(category_data)
 
-        category_data.pop("_id", None)
+        return {
+            "id": str(category_id),
+            "name": category_data["name"],
+            "description": category_data["description"],
+            "created_at": category_data["created_at"]
+        }
+    @staticmethod
+    async def get_all_categories():
 
-        category_data["id"] = str(category_id)
+        return await CategoryRepository.get_all_categories()
 
-        return category_data
+    @staticmethod
+    async def get_category(category_id):
+
+        return await CategoryRepository.get_category_by_id(
+            category_id
+        )
+
+    @staticmethod
+    async def update_category(category_id, category):
+
+        data = {
+            "name": category.name,
+            "description": category.description
+        }
+
+        result = await CategoryRepository.update_category(
+            category_id,
+            data
+        )
+
+        return result.modified_count
+
+    @staticmethod
+    async def delete_category(category_id):
+
+        result = await CategoryRepository.delete_category(
+            category_id
+        )
+
+        return result.deleted_count

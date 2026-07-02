@@ -21,19 +21,28 @@ class CategoryRepository:
         categories = []
 
         async for category in database.categories.find():
+
             category["id"] = str(category["_id"])
             del category["_id"]
+
             categories.append(category)
 
         return categories
 
     @staticmethod
     async def get_category_by_id(category_id: str):
-        return await database.categories.find_one(
+
+        category = await database.categories.find_one(
             {
                 "_id": ObjectId(category_id)
             }
         )
+
+        if category:
+            category["id"] = str(category["_id"])
+            del category["_id"]
+
+        return category
 
     @staticmethod
     async def update_category(category_id: str, data: dict):
