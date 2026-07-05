@@ -1,6 +1,7 @@
 from fastapi import HTTPException
-
+from app.constants.attempt_messages import AttemptMessages
 from app.constants.quiz_messages import QuizMessages
+from app.constants.question_messages import QuestionMessages
 
 class AppException(HTTPException):
     def __init__(self, status_code: int, message: str):
@@ -57,4 +58,56 @@ class InvalidQuizIdException(AppException):
         super().__init__(
             status_code=400,
             message=QuizMessages.INVALID_QUIZ_ID
+        )
+class QuestionNotFoundException(AppException):
+    def __init__(self):
+        super().__init__(
+            status_code=404,
+            message=QuestionMessages.QUESTION_NOT_FOUND
+        )
+
+
+class QuestionAlreadyExistsException(AppException):
+    def __init__(self):
+        super().__init__(
+            status_code=409,
+            message=QuestionMessages.QUESTION_ALREADY_EXISTS
+        )
+
+
+class InvalidQuestionIdException(AppException):
+    def __init__(self):
+        super().__init__(
+            status_code=400,
+            message=QuestionMessages.INVALID_QUESTION_ID
+        )
+class AttemptNotFoundException(AppException):
+    def __init__(self):
+        super().__init__(
+            status_code=404,
+            message=AttemptMessages.ATTEMPT_NOT_FOUND
+        )
+
+
+class InvalidAttemptIdException(AppException):
+    def __init__(self):
+        super().__init__(
+            status_code=400,
+            message=AttemptMessages.INVALID_ATTEMPT_ID
+        )
+
+
+class AttemptLimitReachedException(AppException):
+    def __init__(self):
+        super().__init__(
+            status_code=409,
+            message=AttemptMessages.ATTEMPT_LIMIT_REACHED
+        )
+
+
+class AttemptAlreadySubmittedException(AppException):
+    def __init__(self):
+        super().__init__(
+            status_code=409,
+            message=AttemptMessages.ATTEMPT_ALREADY_SUBMITTED
         )
