@@ -8,6 +8,7 @@ from app.api.v1.quizzes import router as quiz_router
 from fastapi import Depends
 from app.api.v1.questions import router as question_router
 from app.api.v1.attempts import router as attempt_router
+from app.api.v1.results import router as result_router
 
 from app.dependencies.auth_dependency import get_current_user
 app = FastAPI(
@@ -30,3 +31,4 @@ app.include_router(category_router)
 app.include_router(quiz_router)
 app.include_router(question_router)
 app.include_router(attempt_router)
+app.include_router(result_router)
