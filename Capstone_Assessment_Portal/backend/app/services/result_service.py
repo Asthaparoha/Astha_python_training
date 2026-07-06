@@ -91,3 +91,186 @@ class ResultService:
         response = result
 
         return response
+    @staticmethod
+    async def get_result_history(
+        current_user
+    ):
+        """
+        Fetch result history.
+        """
+
+        attempts = await AttemptRepository.get_student_attempts(
+            current_user["email"]
+        )
+
+        results = []
+
+        for attempt in attempts:
+
+            quiz = await QuizRepository.get_quiz_by_id(
+                attempt["quiz_id"]
+            )
+
+            percentage = (
+                attempt["score"]
+                /
+                quiz["total_marks"]
+            ) * 100
+
+            results.append(
+
+                {
+
+                    "attempt_id": attempt["id"],
+
+                    "quiz_title": quiz["title"],
+
+                    "score": attempt["score"],
+
+                    "total_marks": quiz["total_marks"],
+
+                    "percentage": round(
+                        percentage,
+                        2
+                    ),
+
+                    "status": (
+                        "PASS"
+                        if percentage >= 40
+                        else "FAIL"
+                    ),
+
+                    "submitted_at": attempt["submitted_at"]
+
+                }
+
+            )
+
+        response = results
+
+        return response
+    @staticmethod
+    async def get_quiz_results(
+        quiz_id: str
+    ):
+        """
+        Fetch all results of a quiz.
+        """
+
+        if not ObjectId.is_valid(
+            quiz_id
+        ):
+            raise ResourceNotFoundException(
+                ResultMessages.INVALID_ATTEMPT_ID
+            )
+
+        quiz = await QuizRepository.get_quiz_by_id(
+            quiz_id
+        )
+
+        if quiz is None:
+            raise ResourceNotFoundException(
+                ResultMessages.RESULT_NOT_FOUND
+            )
+
+        attempts = await AttemptRepository.get_attempts_by_quiz(
+            quiz_id
+        )
+
+        results = []
+
+        for attempt in attempts:
+
+            percentage = (
+                attempt["score"]
+                /
+                quiz["total_marks"]
+            ) * 100
+
+            results.append(
+
+                {
+
+                    "student_email": attempt["student_email"],
+
+                    "score": attempt["score"],
+
+                    "total_marks": quiz["total_marks"],
+
+                    "percentage": round(
+                        percentage,
+                        2
+                    ),
+
+                    "status": (
+                        "PASS"
+                        if percentage >= 40
+                        else "FAIL"
+                    ),
+
+                    "submitted_at": attempt["submitted_at"]
+
+                }
+
+            )
+
+        response = results
+
+        return response
+    @staticmethod
+    async def get_leaderboard(
+        quiz_id: str
+    ):
+        """
+        Fetch leaderboard for a quiz.
+        """
+
+        if not ObjectId.is_valid(
+            quiz_id
+        ):
+            raise ResourceNotFoundException(
+                ResultMessages.INVALID_ATTEMPT_ID
+            )
+
+        quiz = await QuizRepository.get_quiz_by_id(
+            quiz_id
+        )
+
+        if quiz is None:
+            raise ResourceNotFoundException(
+                ResultMessages.RESULT_NOT_FOUND
+            )
+
+        attempts = await AttemptRepository.get_attempts_by_quiz(
+            quiz_id
+        )
+
+        leaderboard = []
+
+        for attempt in attempts:
+
+            percentage = (
+                attempt["score"]
+                /
+                quiz["total_marks"]
+            ) * 100
+
+            leaderboard.append(
+                {
+                    "student_email": attempt["student_email"],
+                    "score": attempt["score"],
+                    "percentage": round(
+                        percentage,
+                        2
+                    )
+                }
+            )
+
+        leaderboard.sort(
+            key=lambda item: item["score"],
+            reverse=True
+        )
+
+        response = leaderboard
+
+        return response

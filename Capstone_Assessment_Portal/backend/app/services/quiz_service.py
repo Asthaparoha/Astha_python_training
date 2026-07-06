@@ -2,6 +2,8 @@ from datetime import datetime
 
 from bson import ObjectId
 
+from app.constants.result_messages import ResultMessages
+from app.repositories.attempt_repository import AttemptRepository
 from app.constants.quiz_messages import QuizMessages
 from app.core.exceptions import (
     InvalidQuizIdException,
@@ -192,5 +194,68 @@ class QuizService:
         logger.info("Quiz deleted successfully")
 
         response = True
+
+        return response
+    @staticmethod
+    async def get_leaderboard(
+        quiz_id: str
+    ):
+        """
+        Fetch leaderboard for a quiz.
+        """
+
+        if not ObjectId.is_valid(
+            quiz_id
+        ):
+            raise ResourceNotFoundException(
+                ResultMessages.INVALID_ATTEMPT_ID
+            )
+
+        quiz = await QuizRepository.get_quiz_by_id(
+            quiz_id
+        )
+
+        if quiz is None:
+            raise ResourceNotFoundException(
+                ResultMessages.RESULT_NOT_FOUND
+            )
+
+        attempts = await AttemptRepository.get_attempts_by_quiz(
+            quiz_id
+        )
+
+        leaderboard = []
+
+        for attempt in attempts:
+
+            percentage = (
+                attempt["score"]
+                /
+                quiz["total_marks"]
+            ) * 100
+
+            leaderboard.append(
+
+                {
+
+                    "student_email": attempt["student_email"],
+
+                    "score": attempt["score"],
+
+                    "percentage": round(
+                        percentage,
+                        2
+                    )
+
+                }
+
+            )
+
+        leaderboard.sort(
+            key=lambda item: item["score"],
+            reverse=True
+        )
+
+        response = leaderboard
 
         return response
