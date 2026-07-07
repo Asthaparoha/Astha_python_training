@@ -1,7 +1,12 @@
 from datetime import datetime
 
+from bson import ObjectId
+from app.core.exceptions import (
+    InvalidCategoryIdException,
+    ResourceNotFoundException,
+)
+from app.constants.category_messages import CategoryMessages
 from app.repositories.category_repository import CategoryRepository
-
 
 class CategoryService:
 
@@ -33,32 +38,70 @@ class CategoryService:
         return await CategoryRepository.get_all_categories()
 
     @staticmethod
-    async def get_category(category_id):
+    async def get_category(category_id: str):
 
-        return await CategoryRepository.get_category_by_id(
+        if not ObjectId.is_valid(category_id):
+            raise InvalidCategoryIdException()
+
+        category = await CategoryRepository.get_category_by_id(
             category_id
         )
 
+        if category is None:
+            raise ResourceNotFoundException(
+                CategoryMessages.CATEGORY_NOT_FOUND
+            )
+
+        response = category
+
+        return response
     @staticmethod
-    async def update_category(category_id, category):
+    async def update_category(category_id: str, category):
+
+        if not ObjectId.is_valid(category_id):
+            raise InvalidCategoryIdException()
+
+        existing = await CategoryRepository.get_category_by_id(
+            category_id
+        )
+
+        if existing is None:
+            raise ResourceNotFoundException(
+                CategoryMessages.CATEGORY_NOT_FOUND
+            )
 
         data = {
             "name": category.name,
             "description": category.description
         }
 
-        result = await CategoryRepository.update_category(
+        await CategoryRepository.update_category(
             category_id,
             data
         )
 
-        return result.modified_count
+        response = True
 
+        return response
     @staticmethod
     async def delete_category(category_id):
 
-        result = await CategoryRepository.delete_category(
+        if not ObjectId.is_valid(category_id):
+            raise InvalidCategoryIdException()
+
+        existing = await CategoryRepository.get_category_by_id(
             category_id
         )
 
-        return result.deleted_count
+        if existing is None:
+            raise ResourceNotFoundException(
+                CategoryMessages.CATEGORY_NOT_FOUND
+            )
+
+        await CategoryRepository.delete_category(
+            category_id
+        )
+
+        response = True
+
+        return response

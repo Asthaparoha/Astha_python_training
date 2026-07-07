@@ -1,6 +1,6 @@
 from fastapi import APIRouter
 
-from app.core.exceptions import AuthenticationException, ResourceExistsException
+from app.constants.auth_messages import AuthMessages
 from app.schemas.auth_schema import StudentRegister, UserLogin
 from app.services.auth_service import AuthService
 from app.utils.response import success_response
@@ -12,29 +12,40 @@ router = APIRouter(
 
 
 @router.post("/register")
-async def register_student(student: StudentRegister):
+async def register_student(
+    student: StudentRegister
+):
+    """
+    Register a new student.
+    """
 
-    user = await AuthService.register_student(student)
-
-    if user is None:
-        raise ResourceExistsException(
-            "Email already registered"
-        )
-
-    return success_response(
-        message="Student registered successfully"
+    await AuthService.register_student(
+        student
     )
+
+    response = success_response(
+        message=AuthMessages.STUDENT_REGISTERED,
+        status_code=201
+    )
+
+    return response
 
 
 @router.post("/login")
-async def login(login_data: UserLogin):
+async def login(
+    login_data: UserLogin
+):
+    """
+    Login user.
+    """
 
-    result = await AuthService.login(login_data)
+    result = await AuthService.login(
+        login_data
+    )
 
-    if result is None:
-        raise AuthenticationException()
-
-    return success_response(
-        message="Login successful",
+    response = success_response(
+        message=AuthMessages.LOGIN_SUCCESSFUL,
         data=result
     )
+
+    return response

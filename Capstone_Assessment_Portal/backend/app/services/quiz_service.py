@@ -65,12 +65,14 @@ class QuizService:
 
         quiz_data["id"] = str(quiz_id)
 
-        logger.info("Quiz created successfully")
+        quiz_data.pop("_id", None)
 
-        response = quiz_data
+        print("QUIZ DATA =", quiz_data)
 
-        return response
+        for k, v in quiz_data.items():
+            print(k, type(v), v)
 
+        return quiz_data
     @staticmethod
     async def get_all_quizzes():
         """

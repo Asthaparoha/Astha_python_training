@@ -118,11 +118,14 @@ class QuestionService:
 
         question_data["id"] = str(question_id)
 
-        logger.info("Question created successfully")
+        question_data.pop("_id", None)
 
-        response = question_data
+        print("QUESTION DATA =", question_data)
 
-        return response
+        for k, v in question_data.items():
+            print(k, type(v), v)
+
+        return question_data
 
     @staticmethod
     async def get_all_questions():

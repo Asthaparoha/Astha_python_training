@@ -9,7 +9,7 @@ from fastapi import Depends
 from app.api.v1.questions import router as question_router
 from app.api.v1.attempts import router as attempt_router
 from app.api.v1.results import router as result_router
-
+from app.api.v1.dashboard import router as dashboard_router
 from app.dependencies.auth_dependency import get_current_user
 app = FastAPI(
     title="Assessment Portal API",
@@ -32,3 +32,4 @@ app.include_router(quiz_router)
 app.include_router(question_router)
 app.include_router(attempt_router)
 app.include_router(result_router)
+app.include_router(dashboard_router)
