@@ -17,9 +17,16 @@ router = APIRouter(
 
 @router.post("/")
 async def create_question(
+    
     question: QuestionCreate,
     current_user=Depends(admin_required)
 ):
+    print("===================")
+    print(question)
+    print(question.question_type)
+    print(question.options)
+    print(question.correct_answer)
+    print("===================")
     """
     Create a question.
     """
@@ -54,7 +61,23 @@ async def get_all_questions(
 
     return response
 
+@router.get("/details/{question_id}")
+async def get_question_details(
+    question_id: str,
+    current_user=Depends(get_current_user)
+):
+    """
+    Fetch complete question details.
+    """
 
+    result = await QuestionService.get_question_details(
+        question_id
+    )
+
+    return success_response(
+        message="Question details fetched successfully",
+        data=result
+    )
 @router.get("/{question_id}")
 async def get_question_by_id(
     question_id: str,

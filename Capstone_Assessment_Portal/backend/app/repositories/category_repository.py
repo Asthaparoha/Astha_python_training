@@ -1,7 +1,9 @@
+from unicodedata import category
+
 from bson import ObjectId
 
 from app.database.connection import database
-
+import re
 
 class CategoryRepository:
 
@@ -12,8 +14,17 @@ class CategoryRepository:
 
     @staticmethod
     async def get_category_by_name(name: str):
+        """
+        Check category ignoring case.
+        """
+
         return await database.categories.find_one(
-            {"name": name}
+            {
+                "name": {
+                    "$regex": f"^{re.escape(name.strip())}$",
+                    "$options": "i"
+                }
+            }
         )
 
     @staticmethod
@@ -46,7 +57,12 @@ class CategoryRepository:
 
     @staticmethod
     async def update_category(category_id: str, data: dict):
-
+        duplicate = await CategoryRepository.get_category_by_name_except_id(
+            category.name.strip(),
+            category_id
+        )
+        if duplicate:
+            return None
         return await database.categories.update_one(
             {
                 "_id": ObjectId(category_id)
@@ -62,5 +78,83 @@ class CategoryRepository:
         return await database.categories.delete_one(
             {
                 "_id": ObjectId(category_id)
+            }
+        )
+    @staticmethod
+    async def get_quizzes_by_category(
+        category_id: str
+    ):
+        """
+        Fetch quizzes belonging to category.
+        """
+
+        quizzes = []
+
+        async for quiz in database.quizzes.find(
+            {
+                "category_id": category_id
+            }
+        ):
+
+            quiz["id"] = str(
+                quiz["_id"]
+            )
+
+            del quiz["_id"]
+
+            quizzes.append(
+                quiz
+            )
+
+        return quizzes
+
+
+    @staticmethod
+    async def get_questions_by_quizzes(
+        quiz_ids: list
+    ):
+        """
+        Fetch questions of quizzes.
+        """
+
+        questions = []
+
+        async for question in database.questions.find(
+            {
+                "quiz_id": {
+                    "$in": quiz_ids
+                }
+            }
+        ):
+
+            question["id"] = str(
+                question["_id"]
+            )
+
+            del question["_id"]
+
+            questions.append(
+                question
+            )
+
+        return questions
+    @staticmethod
+    async def get_category_by_name_except_id(
+        name: str,
+        category_id: str
+    ):
+        """
+        Check duplicate category while updating.
+        """
+
+        return await database.categories.find_one(
+            {
+                "name": {
+                    "$regex": f"^{re.escape(name.strip())}$",
+                    "$options": "i"
+                },
+                "_id": {
+                    "$ne": ObjectId(category_id)
+                }
             }
         )

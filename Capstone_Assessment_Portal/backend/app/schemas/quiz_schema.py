@@ -12,6 +12,10 @@ class QuizCreate(BaseModel):
 
     category_id: str
 
-    duration: int = Field(..., gt=0)
+    duration: int = Field(
+    ...,
+    ge=1,
+    le=180
+)
 
     total_marks: int = Field(..., gt=0)

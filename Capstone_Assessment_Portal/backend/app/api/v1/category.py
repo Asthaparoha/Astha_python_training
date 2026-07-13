@@ -63,7 +63,23 @@ async def get_category(
         message="Category fetched successfully",
         data=category
     )
+@router.get("/{category_id}/details")
+async def get_category_details(
+    category_id: str,
+    current_user=Depends(admin_required)
+):
+    """
+    Fetch category with quizzes and questions.
+    """
 
+    result = await CategoryService.get_category_details(
+        category_id
+    )
+
+    return success_response(
+        message="Category details fetched successfully",
+        data=result
+    )
 
 @router.put("/{category_id}")
 async def update_category(
@@ -72,10 +88,15 @@ async def update_category(
     current_user=Depends(admin_required)
 ):
 
-    await CategoryService.update_category(
+    result=await CategoryService.update_category(
         category_id,
         category
     )
+    if result is None:
+
+        raise ResourceExistsException(
+            "Category already exists"
+        )
 
     return success_response(
         message="Category updated successfully"

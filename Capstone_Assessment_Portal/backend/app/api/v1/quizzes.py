@@ -8,7 +8,7 @@ from app.dependencies.auth_dependency import (
 from app.schemas.quiz_schema import QuizCreate
 from app.services.quiz_service import QuizService
 from app.utils.response import success_response
-
+from app.core.exceptions import ResourceExistsException
 router = APIRouter(
     prefix="/quizzes",
     tags=["Quizzes"]
@@ -27,9 +27,16 @@ async def create_quiz(
     result = await QuizService.create_quiz(
         quiz
     )
+    if result is None:
+
+        raise ResourceExistsException(
+
+            "Quiz already exists"
+
+        )
 
     response = success_response(
-        message=QuizMessages.QUIZ_CREATED,
+        message="Quiz created successfully",
         data=result,
         status_code=201
     )
@@ -45,7 +52,9 @@ async def get_all_quizzes(
     Fetch all quizzes.
     """
 
-    quizzes = await QuizService.get_all_quizzes()
+    quizzes = await QuizService.get_all_quizzes(
+    current_user
+)
 
     response = success_response(
         message=QuizMessages.QUIZZES_FETCHED,
@@ -54,7 +63,23 @@ async def get_all_quizzes(
 
     return response
 
+@router.get("/details/{quiz_id}")
+async def get_quiz_details(
+    quiz_id: str,
+    current_user=Depends(get_current_user)
+):
+    """
+    Fetch complete quiz details.
+    """
 
+    result = await QuizService.get_quiz_details(
+        quiz_id
+    )
+
+    return success_response(
+        message="Quiz details fetched successfully",
+        data=result
+    )
 @router.get("/{quiz_id}")
 async def get_quiz_by_id(
     quiz_id: str,
@@ -86,10 +111,17 @@ async def update_quiz(
     Update quiz.
     """
 
-    await QuizService.update_quiz(
+    result=await QuizService.update_quiz(
         quiz_id,
         quiz
     )
+    if result is None:
+
+        raise ResourceExistsException(
+
+            "Quiz already exists"
+
+        )
 
     response = success_response(
         message=QuizMessages.QUIZ_UPDATED

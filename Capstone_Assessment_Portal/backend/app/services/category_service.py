@@ -105,3 +105,51 @@ class CategoryService:
         response = True
 
         return response
+    @staticmethod
+    async def get_category_details(
+        category_id: str
+    ):
+        """
+        Fetch category along with quizzes
+        and questions.
+        """
+
+        if not ObjectId.is_valid(
+            category_id
+        ):
+            raise InvalidCategoryIdException()
+
+        category = await CategoryRepository.get_category_by_id(
+            category_id
+        )
+
+        if category is None:
+            raise ResourceNotFoundException(
+                CategoryMessages.CATEGORY_NOT_FOUND
+            )
+
+        quizzes = await CategoryRepository.get_quizzes_by_category(
+            category_id
+        )
+
+        quiz_ids = [
+
+            quiz["id"]
+
+            for quiz in quizzes
+
+        ]
+
+        questions = await CategoryRepository.get_questions_by_quizzes(
+            quiz_ids
+        )
+
+        return {
+
+            "category": category,
+
+            "quizzes": quizzes,
+
+            "questions": questions
+
+        }

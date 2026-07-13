@@ -184,3 +184,29 @@ class AttemptRepository:
             )
 
         return attempts
+    @staticmethod
+    async def get_student_attempts_by_quiz(
+        student_email: str,
+        quiz_id: str
+    ):
+        """
+        Fetch all attempts of a student for a quiz.
+        """
+
+        attempts = []
+
+        async for attempt in database.attempts.find(
+            {
+                "student_email": student_email,
+                "quiz_id": quiz_id,
+                "status": "submitted"
+            }
+        ):
+
+            attempt["id"] = str(attempt["_id"])
+
+            del attempt["_id"]
+
+            attempts.append(attempt)
+
+        return attempts

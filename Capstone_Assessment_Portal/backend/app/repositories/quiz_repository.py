@@ -2,7 +2,7 @@ from bson import ObjectId
 
 from app.database.connection import database
 
-
+import re
 class QuizRepository:
     """
     Repository for Quiz collection.
@@ -52,11 +52,50 @@ class QuizRepository:
     async def get_quiz_by_title(title: str):
 
         return await database.quizzes.find_one(
-            {
-                "title": title
-            }
-        )
 
+            {
+
+                "title": {
+
+                    "$regex": f"^{re.escape(title.strip())}$",
+
+                    "$options": "i"
+
+                }
+
+            }
+
+        )
+    @staticmethod
+    async def get_quiz_by_title_except_id(
+
+        title: str,
+
+        quiz_id: str
+
+    ):
+
+        return await database.quizzes.find_one(
+
+            {
+
+                "title": {
+
+                    "$regex": f"^{re.escape(title.strip())}$",
+
+                    "$options": "i"
+
+                },
+
+                "_id": {
+
+                    "$ne": ObjectId(quiz_id)
+
+                }
+
+            }
+
+        )
     @staticmethod
     async def update_quiz(quiz_id: str, data: dict):
 
@@ -87,22 +126,4 @@ class QuizRepository:
         )
 
         return quiz
-    @staticmethod
-    async def get_quiz_by_title_except_id(
-            title: str,
-            quiz_id: str
-        ):
-            """
-            Fetch quiz with same title excluding current quiz.
-            """
-
-            quiz = await database.quizzes.find_one(
-                {
-                    "title": title,
-                    "_id": {
-                        "$ne": ObjectId(quiz_id)
-                    }
-                }
-            )
-
-            return quiz
+    

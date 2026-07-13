@@ -14,7 +14,7 @@ from app.core.exceptions import (
 from app.core.logger import logger
 from app.repositories.category_repository import CategoryRepository
 from app.repositories.quiz_repository import QuizRepository
-
+from app.repositories.question_repository import QuestionRepository
 
 class QuizService:
     """
@@ -47,9 +47,17 @@ class QuizService:
             raise ResourceNotFoundException(
                 QuizMessages.CATEGORY_NOT_FOUND
             )
+        existing_quiz = await QuizRepository.get_quiz_by_title(
 
+            quiz.title
+
+        )
+
+        if existing_quiz:
+
+            return None
         quiz_data = {
-            "title": quiz.title,
+            "title": quiz.title.strip(),
             "description": quiz.description,
             "category_id": quiz.category_id,
             "duration": quiz.duration,
@@ -74,17 +82,34 @@ class QuizService:
 
         return quiz_data
     @staticmethod
-    async def get_all_quizzes():
+    async def get_all_quizzes(
+        current_user
+    ):
         """
         Fetch all quizzes.
         """
 
         quizzes = await QuizRepository.get_all_quizzes()
 
-        response = quizzes
+        for quiz in quizzes:
 
-        return response
+            attempts = await AttemptRepository.get_student_attempts_by_quiz(
 
+                current_user["email"],
+
+                quiz["id"]
+
+            )
+
+            quiz["attempts_remaining"] = max(
+
+                0,
+
+                2 - len(attempts)
+
+            )
+
+        return quizzes
     @staticmethod
     async def get_quiz_by_id(
         quiz_id: str
@@ -148,9 +173,19 @@ class QuizService:
             raise ResourceNotFoundException(
                 QuizMessages.CATEGORY_NOT_FOUND
             )
+        duplicate_quiz = await QuizRepository.get_quiz_by_title_except_id(
 
+            quiz.title,
+
+            quiz_id
+
+        )
+
+        if duplicate_quiz:
+
+            return None
         data = {
-            "title": quiz.title,
+            "title": quiz.title.strip(),
             "description": quiz.description,
             "category_id": quiz.category_id,
             "duration": quiz.duration,
@@ -259,5 +294,60 @@ class QuizService:
         )
 
         response = leaderboard
+
+        return response
+    @staticmethod
+    async def get_quiz_details(
+        quiz_id: str
+    ):
+        """
+        Fetch complete quiz details.
+        """
+
+        if not ObjectId.is_valid(quiz_id):
+
+            raise InvalidQuizIdException()
+
+        quiz = await QuizRepository.get_quiz_by_id(
+            quiz_id
+        )
+
+        if quiz is None:
+
+            raise QuizNotFoundException()
+
+        category = await CategoryRepository.get_category_by_id(
+            quiz["category_id"]
+        )
+
+        questions = await QuestionRepository.get_questions_by_quiz(
+            quiz_id
+        )
+
+        attempts = await AttemptRepository.get_all_attempts()
+
+        quiz_attempts = [
+
+            attempt
+
+            for attempt in attempts
+
+            if attempt["quiz_id"] == quiz_id
+
+        ]
+
+        response = {
+
+            "quiz": quiz,
+
+            "category": category,
+
+            "questions": questions,
+
+            "attempt_count": len(
+                quiz_attempts
+            )
+
+        }
 
         return response

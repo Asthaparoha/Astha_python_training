@@ -12,7 +12,7 @@ from app.core.exceptions import (
 from app.core.logger import logger
 from app.repositories.question_repository import QuestionRepository
 from app.repositories.quiz_repository import QuizRepository
-
+from app.repositories.category_repository import CategoryRepository
 
 class QuestionService:
     """
@@ -305,5 +305,48 @@ class QuestionService:
             )
 
         response = questions
+
+        return response
+    @staticmethod
+    async def get_question_details(
+        question_id: str
+    ):
+        """
+        Fetch complete question details.
+        """
+
+        if not ObjectId.is_valid(question_id):
+
+            raise InvalidQuestionIdException()
+
+        question = await QuestionRepository.get_question_by_id(
+            question_id
+        )
+
+        if question is None:
+
+            raise QuestionNotFoundException()
+
+        quiz = await QuizRepository.get_quiz_by_id(
+            question["quiz_id"]
+        )
+
+        category = None
+
+        if quiz:
+
+            category = await CategoryRepository.get_category_by_id(
+                quiz["category_id"]
+            )
+
+        response = {
+
+            "question": question,
+
+            "quiz": quiz,
+
+            "category": category
+
+        }
 
         return response

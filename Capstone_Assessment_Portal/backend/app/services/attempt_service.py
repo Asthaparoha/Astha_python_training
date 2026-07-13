@@ -46,12 +46,12 @@ class AttemptService:
                 AttemptMessages.QUIZ_NOT_FOUND
             )
 
-        existing_attempt = await AttemptRepository.get_student_attempt(
+        attempts = await AttemptRepository.get_student_attempts_by_quiz(
             current_user["email"],
             quiz_id
         )
 
-        if existing_attempt:
+        if len(attempts) >= 2:
             raise AttemptLimitReachedException()
 
         question_ids = await QuestionRepository.get_question_ids_by_quiz(
@@ -189,11 +189,6 @@ class AttemptService:
         elapsed_minutes = (
             datetime.utcnow() - started_at
         ).total_seconds() / 60
-
-        if elapsed_minutes > attempt["time_limit"]:
-            raise ResourceNotFoundException(
-                AttemptMessages.TIME_LIMIT_EXCEEDED
-            )
 
         questions = await QuestionRepository.get_questions_map(
             attempt["quiz_id"]

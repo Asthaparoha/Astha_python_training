@@ -63,21 +63,22 @@ class QuestionRepository:
         questions = []
 
         async for question in database.questions.find(
+
             {
+
                 "quiz_id": quiz_id
+
             }
+
         ):
 
-            question["id"] = str(
-                question["_id"]
-            )
+            question["id"] = str(question["_id"])
 
             del question["_id"]
 
             questions.append(question)
 
         return questions
-
     @staticmethod
     async def get_question_by_text(
         quiz_id: str,

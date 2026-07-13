@@ -7,7 +7,7 @@ from app.core.exceptions import (
 )
 from app.repositories.attempt_repository import AttemptRepository
 from app.repositories.quiz_repository import QuizRepository
-
+from app.repositories.question_repository import QuestionRepository
 
 class ResultService:
     """
@@ -56,16 +56,55 @@ class ResultService:
             )
 
         quiz = await QuizRepository.get_quiz_by_id(
+                    attempt["quiz_id"]
+                )
+        questions = await QuestionRepository.get_questions_map(
             attempt["quiz_id"]
         )
 
-        percentage = (
-            attempt["score"]
-            /
-            quiz["total_marks"]
-        ) * 100
+        answer_review = []
 
-        result = {
+        for answer in attempt["answers"]:
+
+            question = questions.get(
+
+                answer["question_id"]
+
+            )
+
+            if question:
+
+                answer_review.append(
+
+                    {
+
+                        "question": question["question_text"],
+
+                        "selected_answer": answer["selected_answer"],
+
+                        "correct_answer": question["correct_answer"],
+
+                        "is_correct":
+
+                            answer["selected_answer"]
+
+                            ==
+
+                            question["correct_answer"],
+
+                        "marks": question["marks"]
+
+                    }
+
+                )
+
+                percentage = (
+                    attempt["score"]
+                    /
+                    quiz["total_marks"]
+                ) * 100
+
+                result = {
 
             "quiz_title": quiz["title"],
 
@@ -74,17 +113,26 @@ class ResultService:
             "total_marks": quiz["total_marks"],
 
             "percentage": round(
+
                 percentage,
+
                 2
+
             ),
 
             "status": (
+
                 "PASS"
+
                 if percentage >= 40
+
                 else "FAIL"
+
             ),
 
-            "submitted_at": attempt["submitted_at"]
+            "submitted_at": attempt["submitted_at"],
+
+            "answers": answer_review
 
         }
 
