@@ -1,6 +1,6 @@
 """
 Pizza Delivery Pipeline
------------------------
+
 
 This DAG simulates an automated pizza order-to-delivery workflow.
 
@@ -25,9 +25,7 @@ from airflow.operators.bash import BashOperator
 from airflow.operators.python import PythonOperator, ShortCircuitOperator
 
 
-# ---------------------------------------------------------------------------
 # Configuration
-# ---------------------------------------------------------------------------
 
 DAG_ID = "pizza_delivery_pipeline"
 
@@ -42,9 +40,7 @@ PIZZA_PREPARATION_MINUTES = 8
 PIZZA_BAKING_MINUTES = 12
 
 
-# ---------------------------------------------------------------------------
 # Task functions
-# ---------------------------------------------------------------------------
 
 def receive_order(**context):
     """
@@ -267,9 +263,7 @@ def quality_check(**context):
     )
 
 
-# ---------------------------------------------------------------------------
 # DAG definition
-# ---------------------------------------------------------------------------
 
 with DAG(
     dag_id=DAG_ID,
